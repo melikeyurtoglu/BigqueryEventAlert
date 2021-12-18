@@ -1,0 +1,26 @@
+pipeline {
+    agent {
+      label 'event'
+    }
+
+    environment {
+      MCREDS = credentials("mailpassword")
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+    stage('run'){
+			steps {
+        sh '''
+        echo ${BUILD_NUMBER}
+        python3 ${WORKSPACE}/bigquery.py --password ${MCREDS_PSW} --query ${WORKSPACE}/teamevent --path ./ --id ${BUILD_NUMBER}
+        '''
+			}
+		}
+    }
+}
